@@ -40,6 +40,13 @@ public class PoolGroupEditor : Editor
             "Hide pools");
         ReorderableListExtensions.HandleDragAndDrop(addPoolsToGroupArea, TryAddElementsToPoolsInGroup);
 
+        PoolGroup poolGroup = (PoolGroup)target;
+        if (GUI.changed)
+        {
+            Undo.RecordObject(poolGroup, $"Pool group with group tag {poolGroup.groupTag} Modify");
+            EditorUtility.SetDirty(poolGroup);
+        }
+
         serializedObject.ApplyModifiedProperties();
     }
 
