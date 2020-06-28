@@ -8,37 +8,46 @@ using Object = System.Object;
 [CustomEditor(typeof(ObjectPooler))]
 public class ObjectPoolerEditor : Editor
 {
+    private SerializedProperty poolsProperty;
     private ReorderableList poolsList;
     private Rect addPoolsArea;
-    private bool showPools;
-    
+
+    private SerializedProperty poolGroupsProperty;
     private ReorderableList groupsList;
     private Rect addGroupsArea;
-    private bool showGroups;
+
+    private const string poolsPropertyName = "pools";
+    private const string poolGroupsPropertyName = "poolGroups";
+
+    private const string poolsHeaderLabel = "Pools (Drag&Drop elements here)";
+    private const string poolGroupsHeaderLabel = "Pool groups (Drag&Drop elements here)";
     
     private void OnEnable()
     {
+        poolsProperty = serializedObject.FindProperty(poolsPropertyName);
+        poolGroupsProperty = serializedObject.FindProperty(poolGroupsPropertyName);
+        
         DrawPools();
         DrawPoolGroups();
     }
 
     private void DrawPools()
     {
-        poolsList = ReorderableListExtensions.SimpleReorderableList(serializedObject, "pools", "Pools");
+        poolsList = ReorderableListCreator.SimpleListWithRemoveButtonOnEachElement(serializedObject, poolsProperty, false);
         poolsList.drawHeaderCallback = (Rect rect) =>
         {
             addPoolsArea = rect;
-            EditorGUI.LabelField(rect, "Pools");
+            EditorGUI.LabelField(rect, poolsHeaderLabel);
         };
     }
 
     private void DrawPoolGroups()
     {
-        groupsList = ReorderableListExtensions.SimpleReorderableList(serializedObject, "poolGroups", "Pool Groups");
+        groupsList = ReorderableListCreator.SimpleListWithRemoveButtonOnEachElement(serializedObject, poolGroupsProperty, false);
         groupsList.drawHeaderCallback = (Rect rect) =>
         {
             addGroupsArea = rect;
-            EditorGUI.LabelField(rect, "Pool groups");
+            EditorGUI.LabelField(rect, poolGroupsHeaderLabel);
         };
     }
 
@@ -46,52 +55,12 @@ public class ObjectPoolerEditor : Editor
     {
         serializedObject.Update();
 
-        ReorderableListExtensions.HandleShowStatus(ref showPools, ref poolsList, "Show pools", "Hide pools");
-        ReorderableListExtensions.HandleShowStatus(ref showGroups, ref groupsList, "Show groups", "Hide groups");
+        ReorderableListTools.HandleShowStatusByButton(ref poolsList, "Show pools", "Hide pools");
+        ReorderableListTools.HandleShowStatusByButton(ref groupsList, "Show groups", "Hide groups");
 
-        ReorderableListExtensions.HandleDragAndDrop(addPoolsArea, TryAddElementsToPools);
-        ReorderableListExtensions.HandleDragAndDrop(addGroupsArea, TryAddElementsToGroups);
+        ReorderableListTools.AddElementsByDragAndDropWithType<Pool>(poolsProperty, addPoolsArea);
+        ReorderableListTools.AddElementsByDragAndDropWithType<PoolGroup>(poolGroupsProperty, addGroupsArea);
         
         serializedObject.ApplyModifiedProperties();
-    }
-
-    private void TryAddElementsToPools()
-    {
-        ObjectPooler pooler = (ObjectPooler) target;
-    
-        foreach (Object draggedObject in DragAndDrop.objectReferences)
-        {
-            Pool draggedPool = draggedObject as Pool;
-            if (draggedPool == null)
-                return;
-            if(pooler.EditorOnlyPools == null)
-                pooler.EditorOnlyPools = new List<Pool>();
-            if (pooler.EditorOnlyPools.Contains(draggedPool))
-                Debug.LogWarning(
-                    $"Pool with prefab name {draggedPool.prefab.name} already exists in pools.");
-            else
-                pooler.EditorOnlyPools.Add(draggedPool);
-
-            pooler.EditorOnlyPools = pooler.EditorOnlyPools;
-        }
-    }
-
-    private void TryAddElementsToGroups()
-    {
-        ObjectPooler pooler = (ObjectPooler) target;
-        foreach (Object draggedObject in DragAndDrop.objectReferences)
-        {
-            PoolGroup draggedGroup = draggedObject as PoolGroup;
-            if (draggedGroup == null)
-                return;
-            if(pooler.EditorOnlyPoolGroups == null)
-                pooler.EditorOnlyPoolGroups = new List<PoolGroup>();
-            if (pooler.EditorOnlyPoolGroups.Contains(draggedGroup))
-                Debug.LogWarning($"Pool group with tag {draggedGroup.groupTag} already exists in pool groups.");
-            else
-                pooler.EditorOnlyPoolGroups.Add(draggedGroup);
-            
-            pooler.EditorOnlyPoolGroups = pooler.EditorOnlyPoolGroups;
-        }
     }
 }

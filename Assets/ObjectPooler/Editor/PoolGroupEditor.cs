@@ -9,62 +9,46 @@ using Object = System.Object;
 [CustomEditor(typeof(PoolGroup))]
 public class PoolGroupEditor : Editor
 {
-    private string[] propertiesInBaseClass = new string[] { "poolsInGroup" };
-    
+    private SerializedProperty poolsInGroupProperty;
     private ReorderableList poolsInGroupList;
-    private Rect addPoolsToGroupArea;
-    private bool showPoolsInGroup;
-    
+    private Rect addPoolsToGroupDragnDropArea;
+
+    private const string poolsInGroupPropertyName = "poolsInGroup";
+    private const string poolsInGroupHeaderLabel = "Pools (Drag&Drop elements here)";
+    private string[] nonDrawingProperties = new string[] { poolsInGroupPropertyName };
+
     private void OnEnable()
     {
+        poolsInGroupProperty = serializedObject.FindProperty(poolsInGroupPropertyName);
+        
         DrawPoolsInGroupList();
     }
 
     private void DrawPoolsInGroupList()
     {
-        poolsInGroupList = ReorderableListExtensions.SimpleReorderableList(serializedObject, "poolsInGroup", "Pools in group");
-        poolsInGroupList.drawHeaderCallback = (Rect rect) =>
-        {
-            addPoolsToGroupArea = rect;
-            EditorGUI.LabelField(rect, "Pools");
-        };
+        poolsInGroupList = ReorderableListCreator.SimpleListWithRemoveButtonOnEachElement(serializedObject, poolsInGroupProperty, false);
+        addPoolsToGroupDragnDropArea = ReorderableListTools.DragnDropAreaOnHeader(poolsInGroupList, poolsInGroupPropertyName);
+        ReorderableListTools.HeaderLabel(poolsInGroupList, poolsInGroupHeaderLabel);
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
 
-        DrawPropertiesExcluding(serializedObject, propertiesInBaseClass);
+        DrawPropertiesExcluding(serializedObject, nonDrawingProperties);
 
-        ReorderableListExtensions.HandleShowStatus(ref showPoolsInGroup, ref poolsInGroupList, "Show pools in group",
-            "Hide pools");
-        ReorderableListExtensions.HandleDragAndDrop(addPoolsToGroupArea, TryAddElementsToPoolsInGroup);
+        ReorderableListTools.HandleShowStatusByButton(ref poolsInGroupList,
+            "Show pools in group", "Hide pools");
+        
+        ReorderableListTools.AddElementsByDragAndDropWithType<Pool>(poolsInGroupProperty, addPoolsToGroupDragnDropArea);
 
-        PoolGroup poolGroup = (PoolGroup)target;
         if (GUI.changed)
         {
+            PoolGroup poolGroup = (PoolGroup)target;
             Undo.RecordObject(poolGroup, $"Pool group with group tag {poolGroup.groupTag} Modify");
             EditorUtility.SetDirty(poolGroup);
         }
 
         serializedObject.ApplyModifiedProperties();
-    }
-
-    private void TryAddElementsToPoolsInGroup()
-    {
-        PoolGroup poolGroup = (PoolGroup) target;
-
-        foreach (Object dragged_object in DragAndDrop.objectReferences)
-        {
-            Pool addablePool = (Pool) dragged_object;
-            if (dragged_object == null)
-                return;
-            if(poolGroup.poolsInGroup == null)
-                poolGroup.poolsInGroup = new List<Pool>();
-            if (poolGroup.poolsInGroup.Contains(addablePool))
-                Debug.LogWarning($"Pool with prefab name {addablePool.prefab.name} is already exists in group.");
-            else
-                poolGroup.poolsInGroup.Add(addablePool);
-        }
     }
 }
