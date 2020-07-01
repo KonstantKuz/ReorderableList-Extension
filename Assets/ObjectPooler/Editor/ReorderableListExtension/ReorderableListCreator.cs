@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
-using Object = System.Object;
 
 public static class ReorderableListCreator
 {
-    public static ReorderableList SimpleListWithRemoveButtonOnEachElement(SerializedObject serializedObject, SerializedProperty listProperty, bool showDefaultButtons)
+    public static ReorderableList SimpleListWithRemoveButtonOnEachElement(SerializedObject serializedObject,
+        SerializedProperty listProperty, bool showDefaultButtons)
     {
         ReorderableList list = new ReorderableList(serializedObject, listProperty, true, true,
-            true, true);
+            showDefaultButtons, showDefaultButtons);
 
-        if (!showDefaultButtons)
-        {
-            list.drawFooterCallback = (Rect rect) => { };
-        }
-
-        list.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+        list.drawElementCallback = delegate(Rect rect, int index, bool active, bool focused)
         {
             Rect elementRect = new Rect(rect.x, rect.y, 2 * rect.width / 3, EditorGUIUtility.singleLineHeight);
-            Rect removeButtonRect = new Rect(rect.x + 2 * rect.width/3, rect.y, rect.width/3, EditorGUIUtility.singleLineHeight);
+            Rect removeButtonRect = new Rect(rect.x + 2 * rect.width / 3, rect.y, rect.width / 3,
+                EditorGUIUtility.singleLineHeight);
 
             if (ReorderableListTools.RemoveButton(removeButtonRect))
             {
@@ -33,19 +27,19 @@ public static class ReorderableListCreator
                 if (ReorderableListTools.IndexWasOutOfBounds(list, index))
                     return;
                 var element = list.serializedProperty.GetArrayElementAtIndex(index);
-                EditorGUI.PropertyField(elementRect,element, GUIContent.none);
+                EditorGUI.PropertyField(elementRect, element, GUIContent.none);
             }
         };
 
         return list;
     }
-    
-    public static ReorderableList SimpleList(SerializedObject serializedObject, SerializedProperty listProperty)
+
+    public static ReorderableList SimpleList(SerializedObject serializedObject, SerializedProperty listProperty, bool showDefaultButtons)
     {
         ReorderableList list = new ReorderableList(serializedObject, listProperty, true, true,
-            true, true);
+            showDefaultButtons, showDefaultButtons);
 
-        list.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+        list.drawElementCallback = delegate(Rect rect, int index, bool active, bool focused)
         {
             var element = list.serializedProperty.GetArrayElementAtIndex(index);
             EditorGUI.PropertyField(rect, element, GUIContent.none);

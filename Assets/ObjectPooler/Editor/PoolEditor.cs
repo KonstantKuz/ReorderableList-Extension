@@ -48,7 +48,7 @@ public class PoolEditor : Editor
 
         if (GUI.changed)
         {
-            Undo.RecordObject(pool, $"Pool with prefab {pool.prefab.name} Modify");
+            Undo.RecordObject(pool, $"Pool Modify");
             EditorUtility.SetDirty(pool);
         }
     }

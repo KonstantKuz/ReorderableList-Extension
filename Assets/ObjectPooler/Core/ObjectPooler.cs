@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ObjectPooler : Singleton<ObjectPooler>
 {
+    //[DrawAsReorderable("pools")] 
     [SerializeField] private List<Pool> pools;
     [SerializeField] private List<PoolGroup> poolGroups;
 
