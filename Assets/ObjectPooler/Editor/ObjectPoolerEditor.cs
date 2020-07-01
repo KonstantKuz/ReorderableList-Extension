@@ -8,59 +8,26 @@ using Object = System.Object;
 [CustomEditor(typeof(ObjectPooler))]
 public class ObjectPoolerEditor : Editor
 {
-    private SerializedProperty poolsProperty;
-    private ReorderableList poolsList;
-    private Rect addPoolsArea;
-
-    private SerializedProperty poolGroupsProperty;
-    private ReorderableList groupsList;
-    private Rect addGroupsArea;
-
+    private ReorderableDrawer<Pool> poolsDrawer;
+    private ReorderableDrawer<PoolGroup> groupsDrawer;
+    
     private const string poolsPropertyName = "pools";
     private const string poolGroupsPropertyName = "poolGroups";
 
-    private const string poolsHeaderLabel = "Pools (Drag&Drop elements here)";
-    private const string poolGroupsHeaderLabel = "Pool groups (Drag&Drop elements here)";
-    
     private void OnEnable()
     {
-        poolsProperty = serializedObject.FindProperty(poolsPropertyName);
-        poolGroupsProperty = serializedObject.FindProperty(poolGroupsPropertyName);
+        poolsDrawer = new ReorderableDrawer<Pool>(ReorderableType.WithRemoveButtons, false);
+        groupsDrawer = new ReorderableDrawer<PoolGroup>(ReorderableType.WithRemoveButtons, false);
         
-        DrawPools();
-        DrawPoolGroups();
-    }
-
-    private void DrawPools()
-    {
-        poolsList = ReorderableListCreator.SimpleListWithRemoveButtonOnEachElement(serializedObject, poolsProperty, false);
-        poolsList.drawHeaderCallback = (Rect rect) =>
-        {
-            addPoolsArea = rect;
-            EditorGUI.LabelField(rect, poolsHeaderLabel);
-        };
-    }
-
-    private void DrawPoolGroups()
-    {
-        groupsList = ReorderableListCreator.SimpleListWithRemoveButtonOnEachElement(serializedObject, poolGroupsProperty, false);
-        groupsList.drawHeaderCallback = (Rect rect) =>
-        {
-            addGroupsArea = rect;
-            EditorGUI.LabelField(rect, poolGroupsHeaderLabel);
-        };
+        poolsDrawer.SetUp(serializedObject, poolsPropertyName);
+        groupsDrawer.SetUp(serializedObject, poolGroupsPropertyName);
     }
 
     public override void OnInspectorGUI()
     {
-        serializedObject.Update();
-
-        ReorderableListTools.HandleShowStatusByButton(ref poolsList, "Show pools", "Hide pools");
-        ReorderableListTools.HandleShowStatusByButton(ref groupsList, "Show groups", "Hide groups");
-
-        ReorderableListTools.AddElementsByDragAndDropWithType<Pool>(poolsProperty, addPoolsArea);
-        ReorderableListTools.AddElementsByDragAndDropWithType<PoolGroup>(poolGroupsProperty, addGroupsArea);
+        DrawPropertiesExcluding(serializedObject, new string[] {poolsPropertyName, poolGroupsPropertyName});
         
-        serializedObject.ApplyModifiedProperties();
+        poolsDrawer.Draw(serializedObject, target );
+        groupsDrawer.Draw(serializedObject, target);
     }
 }
