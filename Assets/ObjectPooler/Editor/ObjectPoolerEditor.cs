@@ -8,16 +8,16 @@ using Object = System.Object;
 [CustomEditor(typeof(ObjectPooler))]
 public class ObjectPoolerEditor : Editor
 {
-    private ReorderableDrawer<Pool> poolsDrawer;
-    private ReorderableDrawer<PoolGroup> groupsDrawer;
+    private ReorderableDrawer poolsDrawer;
+    private ReorderableDrawer groupsDrawer;
     
     private const string poolsPropertyName = "pools";
     private const string poolGroupsPropertyName = "poolGroups";
 
     private void OnEnable()
     {
-        poolsDrawer = new ReorderableDrawer<Pool>(ReorderableType.WithRemoveButtons, false);
-        groupsDrawer = new ReorderableDrawer<PoolGroup>(ReorderableType.WithRemoveButtons, false);
+        poolsDrawer = new ReorderableDrawer(ReorderableType.WithRemoveButtons, false);
+        groupsDrawer = new ReorderableDrawer(ReorderableType.WithRemoveButtons, false);
         
         poolsDrawer.SetUp(serializedObject, poolsPropertyName);
         groupsDrawer.SetUp(serializedObject, poolGroupsPropertyName);

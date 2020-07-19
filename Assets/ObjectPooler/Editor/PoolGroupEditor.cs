@@ -7,10 +7,10 @@ public class PoolGroupEditor : Editor
 {
     private string arrayPropertyName = "poolsInGroup";
     
-    private ReorderableDrawer<Pool> poolsDrawer;
+    private ReorderableDrawer poolsDrawer;
     private void OnEnable()
     {
-        poolsDrawer = new ReorderableDrawer<Pool>(ReorderableType.WithRemoveButtons, false);
+        poolsDrawer = new ReorderableDrawer(ReorderableType.WithRemoveButtons, false);
         poolsDrawer.SetUp(serializedObject, arrayPropertyName);
     }
 

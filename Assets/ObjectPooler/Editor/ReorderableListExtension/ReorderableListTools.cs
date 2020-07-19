@@ -45,7 +45,7 @@ public static class ReorderableListTools
             list.DoLayoutList();
     }
 
-    public static void AddElementsByDragAndDropWithType<T>(SerializedProperty listProperty, Rect dragnDropArea)
+    public static void AddElementsByDragAndDropWithType(SerializedProperty listProperty, Rect dragnDropArea)
     {
         Event currentEvent = Event.current;
         switch (currentEvent.type)
@@ -58,7 +58,7 @@ public static class ReorderableListTools
                 if (currentEvent.type == EventType.DragPerform)
                 {
                     DragAndDrop.AcceptDrag();
-                    TryAddElementsFromDragAndDrop<T>(listProperty);
+                    TryAddElementsFromDragAndDrop(listProperty);
                 }
 
                 break;
@@ -66,7 +66,7 @@ public static class ReorderableListTools
     }
 
     private static void
-        TryAddElementsFromDragAndDrop<T>(SerializedProperty listProperty)
+        TryAddElementsFromDragAndDrop(SerializedProperty listProperty)
     {
         foreach (Object draggedObject in DragAndDrop.objectReferences)
         {

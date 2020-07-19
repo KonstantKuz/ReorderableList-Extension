@@ -8,7 +8,7 @@ public enum ReorderableType
     Simple,
     WithRemoveButtons,
 }
-public class ReorderableDrawer<T>
+public class ReorderableDrawer
 {
     private SerializedProperty property;
     private ReorderableList reorderableList;
@@ -50,7 +50,7 @@ public class ReorderableDrawer<T>
 
         ReorderableListTools.HandleShowStatusByButton(reorderableList);
         
-        ReorderableListTools.AddElementsByDragAndDropWithType<T>(property, dragnDropArea);
+        ReorderableListTools.AddElementsByDragAndDropWithType(property, dragnDropArea);
 
         if (GUI.changed)
         {
