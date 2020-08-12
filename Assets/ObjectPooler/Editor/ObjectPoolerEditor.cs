@@ -25,9 +25,27 @@ public class ObjectPoolerEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        serializedObject.Update();
+        
         DrawPropertiesExcluding(serializedObject, new string[] {poolsPropertyName, poolGroupsPropertyName});
         
         poolsDrawer.Draw(serializedObject, target );
         groupsDrawer.Draw(serializedObject, target);
+        
+        TryResolveUnassignedPools();
+
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void TryResolveUnassignedPools()
+    {
+        ObjectPooler objectPooler = (ObjectPooler) target;
+        objectPooler.TryResolveUnassignedPools();
+
+        if (GUI.changed)
+        {
+            Undo.RecordObject(objectPooler, $"ObjectPooler Modify");
+            EditorUtility.SetDirty(objectPooler);
+        }
     }
 }

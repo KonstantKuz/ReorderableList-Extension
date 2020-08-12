@@ -10,14 +10,32 @@ public class PoolGroupEditor : Editor
     private ReorderableDrawer poolsDrawer;
     private void OnEnable()
     {
-        poolsDrawer = new ReorderableDrawer(ReorderableType.WithRemoveButtons, false);
+        poolsDrawer = new ReorderableDrawer(ReorderableType.WithOneLineProperties, 
+                                            new string[] { "pool", "weight" });
         poolsDrawer.SetUp(serializedObject, arrayPropertyName);
     }
 
     public override void OnInspectorGUI()
     {
-        DrawPropertiesExcluding(serializedObject,  arrayPropertyName);
+        HandleGroup();
+        
         poolsDrawer.Draw(serializedObject, target);
+    }
+
+    private void HandleGroup()
+    {
+        serializedObject.Update();
+        
+        PoolGroup poolGroup = (PoolGroup)target;
+        poolGroup.groupTag = EditorGUILayout.TextField("Group tag", poolGroup.groupTag);
+        
+        if (GUI.changed)
+        {
+            Undo.RecordObject(poolGroup, $"Pool group Modify");
+            EditorUtility.SetDirty(poolGroup);
+        }
+        
+        serializedObject.ApplyModifiedProperties();
     }
 }
 

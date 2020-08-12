@@ -7,6 +7,23 @@ using UnityEngine;
 public class PoolGroup : ScriptableObject
 {
     public string groupTag;
+    public List<WeightedPool> poolsInGroup;
+    
+    [HideInInspector] public int totalWeight;
 
-    public List<Pool> poolsInGroup;
+    public void CalculateTotalWeight()
+    {
+        totalWeight = 0;
+        for (int i = 0; i < poolsInGroup.Count; i++)
+        {
+            totalWeight += poolsInGroup[i].weight;
+        }
+    }
+}
+
+[System.Serializable]
+public class WeightedPool
+{
+    public int weight;
+    public Pool pool;
 }

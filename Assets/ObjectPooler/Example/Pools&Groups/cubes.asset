@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groupTag: cubes
   poolsInGroup:
-  - {fileID: 11400000, guid: b6d34ea2b3d136f46a1f9552163fe1f2, type: 2}
-  - {fileID: 11400000, guid: 05f32ba3839d21e45b439ab5d07808da, type: 2}
-  - {fileID: 11400000, guid: 2a1f56f2a058db4438546279afede3d6, type: 2}
+  - weight: 0
+    pool: {fileID: 11400000, guid: e27432977554b2b4097ee4de4f2d292d, type: 2}
+  - weight: 0
+    pool: {fileID: 11400000, guid: 2a1f56f2a058db4438546279afede3d6, type: 2}
+  totalWeight: 0
