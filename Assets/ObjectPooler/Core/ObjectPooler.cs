@@ -203,6 +203,28 @@ public class ObjectPooler : Singleton<ObjectPooler>
         Debug.LogError($"Return null with {randomValue} weight. Maybe weight are not assigned.");
         return null;
     }
+
+    public GameObject SpawnWeightedRandomObject(string groupTag, Vector3 position)
+    {
+        GameObject objToReturn;
+
+        objToReturn = SpawnWeightedRandomObject(groupTag);
+        objToReturn.transform.position = position;
+
+        return objToReturn;
+    }
+    
+    public GameObject SpawnWeightedRandomObject(string groupTag, Vector3 position, Quaternion rotation)
+    {
+        GameObject objToReturn;
+
+        objToReturn = SpawnWeightedRandomObject(groupTag);
+        objToReturn.transform.position = position;
+        objToReturn.transform.rotation = rotation;
+
+        return objToReturn;
+    }
+    
     #endregion
 
     #region Return object
