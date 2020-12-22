@@ -6,13 +6,22 @@ using UnityEditor;
 public class ReorderableDrawerTemplate : Editor
 {
     // List/Array property name in base class
-    private string arrayPropertyName = "someYourArrayOrList";
+    private string arrayPropertyName = "yourArrayOrListPropertyName";
+    
+    // Nested properties names for example like in ExamplePropertiesHolder
+    private string arrayElementPropertiesNames = { "propertyName1", "propertyName2" };
+    
     private ReorderableDrawer arrayDrawer;
     private void OnEnable()
     {
         arrayDrawer = new ReorderableDrawer(ReorderableType.WithRemoveButtons, false);
+        // or use
+        arrayDrawer = new ReorderableDrawer(ReorderableType.WithRemoveButtons, arrayElementPropertiesNames);
+        // to draw ExamplePropertiesHolder[] (or List) with its nested properties on one line
+        
         arrayDrawer.SetUp(serializedObject, arrayPropertyName);
     }
+    
     public override void OnInspectorGUI()
     {
         // If you have some different arrays in one class use
@@ -23,4 +32,11 @@ public class ReorderableDrawerTemplate : Editor
 
         arrayDrawer.Draw(serializedObject, target);
     }
+}
+
+[System.Serializable]
+public class ExamplePropertiesHolder
+{
+    public float property1;
+    public int property2;
 }
