@@ -9,7 +9,7 @@ public class ReorderableDrawerTemplate : Editor
     private string arrayPropertyName = "yourArrayOrListPropertyName";
     
     // Nested properties names for example like in ExamplePropertiesHolder
-    private string arrayElementPropertiesNames = { "propertyName1", "propertyName2" };
+    private string[] arrayElementPropertiesNames = { "propertyName1", "propertyName2" };
     
     private ReorderableDrawer arrayDrawer;
     private void OnEnable()
